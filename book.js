@@ -53,23 +53,20 @@ const BOOK_WIDTH_WORLD = 3.5;
 const BOOK_HEIGHT_WORLD = 5;
 const CAMERA_Z = 6;
 const MOBILE_BP = 950;           // match CSS stacked breakpoint (max-width: 949px)
-const SMALL_MOBILE_BP = 400;     // 400px and below: book at 75% width
-const SMALL_MOBILE_FRACTION = 0.75;
-const MOBILE_FRACTION = 0.55;
-const MOBILE_HEIGHT_FRACTION = 0.75;  // 401–949px: book height = 75% of screen height
-const DESKTOP_HEIGHT_CLAMP = 0.92;    // cap book by height on desktop so it never overflows
+const SMALL_MOBILE_BP = 400;     // 400px and below: book fraction of width
+const SMALL_MOBILE_FRACTION = 0.7;    // ≤400px
+const MOBILE_FRACTION = 0.6;
+const MOBILE_HEIGHT_FRACTION = 0.6;   // 401–949px: book height fraction
+const DESKTOP_HEIGHT_CLAMP = 0.88;
 
-// Desktop (canvas ≥ MOBILE_BP): fraction increases with canvas size — smaller on MacBook, larger on big monitors.
-// Breakpoints: ~550 (0.18), ~750 (0.22), ~1000 (0.28), ~1300 (0.35), ~1600+ (0.42)
+// Desktop (canvas ≥ MOBILE_BP): ≤550 → 0.12, 550–750 → 0.12–0.18, 750–1000 → 0.22–0.28, 1000+ → 0.35
 function getBookWidthFraction(canvasWidth) {
     if (canvasWidth <= SMALL_MOBILE_BP) return SMALL_MOBILE_FRACTION;
     if (canvasWidth < MOBILE_BP) return MOBILE_FRACTION;
-    if (canvasWidth <= 550) return 0.18;
-    if (canvasWidth <= 750) return 0.18 + (0.22 - 0.18) * (canvasWidth - 550) / 200;
+    if (canvasWidth <= 550) return 0.12;
+    if (canvasWidth <= 750) return 0.12 + (0.18 - 0.12) * (canvasWidth - 550) / 200;
     if (canvasWidth <= 1000) return 0.22 + (0.28 - 0.22) * (canvasWidth - 750) / 250;
-    if (canvasWidth <= 1300) return 0.28 + (0.35 - 0.28) * (canvasWidth - 1000) / 300;
-    if (canvasWidth <= 1600) return 0.35 + (0.42 - 0.35) * (canvasWidth - 1300) / 300;
-    return 0.42;
+    return 0.35;
 }
 
 function updateBookScale() {
@@ -78,7 +75,7 @@ function updateBookScale() {
 
     const halfFov = (75 * Math.PI / 180) / 2;
 
-    // 400 < width < 950: scale by height so book height = 85% of screen height
+    // 400 < width < 950: scale by height (tablet / mobile landscape)
     if (w > SMALL_MOBILE_BP && w < MOBILE_BP) {
         const visibleHeightAtZ0 = 2 * CAMERA_Z * Math.tan(halfFov);
         const scale = (MOBILE_HEIGHT_FRACTION * visibleHeightAtZ0) / BOOK_HEIGHT_WORLD;
@@ -89,7 +86,10 @@ function updateBookScale() {
     const fraction = getBookWidthFraction(w);
     const aspect = w / h;
     const visibleWidthAtZ0 = 2 * CAMERA_Z * Math.tan(halfFov) * aspect;
-    const scale = (fraction * visibleWidthAtZ0) / BOOK_WIDTH_WORLD;
+    const visibleHeightAtZ0 = 2 * CAMERA_Z * Math.tan(halfFov);
+    let scale = (fraction * visibleWidthAtZ0) / BOOK_WIDTH_WORLD;
+    const scaleByHeight = (DESKTOP_HEIGHT_CLAMP * visibleHeightAtZ0) / BOOK_HEIGHT_WORLD;
+    if (scaleByHeight < scale) scale = scaleByHeight;
     cube.scale.setScalar(scale);
 }
 updateBookScale();

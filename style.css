@@ -18,6 +18,7 @@ html {
 
 body {
     margin: 0;
+    color: rgba(0, 0, 0, 1);
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     min-height: 100vh;
     min-height: 100dvh;
@@ -116,12 +117,13 @@ body {
     cursor: none;
 }
 
-/* White half: conceptual flow + CTA */
+/* White half: conceptual flow + CTA; full height so spacing goes to bottom */
 .right-panel {
     width: 50vw;
     min-width: 0;
-    height: 100vh;
-    height: 100dvh;
+    height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -193,12 +195,17 @@ body {
 .flow > *:nth-child(14) { animation-delay: 1.69s; }
 .flow > *:nth-child(15) { animation-delay: 1.82s; }
 
-/* CTA bar: own box; black line above and fixed to viewport bottom only on mobile */
+/* CTA bar: button + X logo. Desktop = column (button above logo); mobile = row (beside) */
 .cta-bar {
     flex-shrink: 0;
     border-top: none;
     background-color: #fff;
-    padding: 1rem 2rem;
+    padding: 1rem 2rem 20px;
+    padding-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
     text-align: center;
 }
 
@@ -209,38 +216,26 @@ body {
     animation: panelReveal 0.65s var(--panel-reveal-ease) 2.1s both;
 }
 
-/* Footer: X logo under the text, pinned to bottom */
-.panel-footer {
-    margin-top: auto;
-    padding-top: 1.5rem;
-    padding-bottom: 0.25rem;
-    text-align: center;
+.cta-bar-x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     opacity: 0;
     visibility: hidden;
     transform: translateY(6px);
-    animation: panelReveal 0.65s var(--panel-reveal-ease) 2.55s both;
+    animation: panelReveal 0.65s var(--panel-reveal-ease) 2.65s both;
 }
 
-.x-link {
-    display: inline-block;
-    opacity: 0.28;
-    transition: opacity 0.2s ease;
-}
-
-.x-link:hover {
-    opacity: 0.7;
-}
-
-.x-logo {
+.cta-bar-x img {
     display: block;
-    width: 20px;
-    height: 15px;
-    filter: brightness(0);
-    transition: filter 0.2s ease;
+    filter: invert(1);
+    opacity: 0.55;
+    transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
-.x-link:hover .x-logo {
-    filter: brightness(0.6);
+.cta-bar-x:hover img {
+    opacity: 1;
+    filter: invert(1) brightness(1.15);
 }
 
 @media (max-width: 949px) {
@@ -256,19 +251,23 @@ body {
         min-height: 380px;
         flex: 1;
         padding: 1.5rem;
-        padding-bottom: calc(96px + 1.5rem + env(safe-area-inset-bottom, 0px)); /* clear space above fixed cta-bar so footer + X link visible */
+        padding-bottom: calc(96px + 1.5rem + env(safe-area-inset-bottom, 0px)); /* clear space above fixed cta-bar */
         overflow: auto;
         -webkit-overflow-scrolling: touch;
     }
 
     .cta-bar {
-        background-color: #000;
-        border-top: 1px solid #fff;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 1);
+        border-top: 1px solid rgba(131, 128, 128, 1);
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
         z-index: 100;
+        padding: 1rem 20px;
         padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
     }
 
@@ -277,6 +276,22 @@ body {
         visibility: visible;
         transform: translateY(0);
         animation: none;
+    }
+
+    .cta-bar-x {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        animation: none;
+    }
+
+}
+
+/* Narrow phones (≤400px): white panel gets more height for content */
+@media (max-width: 400px) {
+    .right-panel {
+        min-height: 95dvh;
+        min-height: 1000px;
     }
 }
 
@@ -393,7 +408,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .flow > *,
     .cta-bar .cta,
-    .panel-footer {
+    .cta-bar-x {
         animation: none;
         opacity: 1;
         visibility: visible;
