@@ -1,0 +1,359 @@
+/* Breakpoints: stacked <950px, side-by-side ≥950px */
+:root {
+    --bp-stacked: 949px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    width: 100%;
+}
+
+html {
+    cursor: none;
+}
+
+body {
+    margin: 0;
+    font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", monospace;
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+    max-width: 100%;
+    cursor: none;
+    display: flex;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Cursor sparkles: full-viewport overlay, non-interactive */
+/* Overlay and all descendants must not capture pointer so body/book/panel cursor shows */
+#sparkles-overlay,
+#sparkles-overlay * {
+    pointer-events: none !important;
+}
+/* Custom wand cursor: follows pointer so wand.png always visible (avoids 32px cursor limit) */
+#custom-cursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+#custom-cursor img {
+    display: block;
+    width: 32px;
+    height: 32px;
+    transform: translate(-50%, -50%);
+}
+#custom-cursor.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+#sparkles-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+}
+
+/* Side-by-side: book left, panel right (when viewport ≥950px) */
+@media (min-width: 950px) {
+    body {
+        flex-direction: row;
+    }
+}
+
+/* Black half: 3D book — canvas centered and scales with viewport */
+.book {
+    position: relative;
+    width: 50vw;
+    min-width: 0;
+    height: 100vh;
+    height: 100dvh;
+    flex-shrink: 0;
+    pointer-events: auto;
+    background-color: #0d0d0d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: none;
+}
+
+@media (max-width: 949px) {
+    .book {
+        width: 100%;
+        max-width: 100%;
+        height: 60vh;
+        height: 60dvh;
+        min-height: 340px;
+        padding-bottom: 40px;
+        box-sizing: border-box;
+    }
+
+}
+
+.book canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
+    cursor: none;
+}
+
+/* White half: conceptual flow + CTA */
+.right-panel {
+    width: 50vw;
+    min-width: 0;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    background-color: #fff;
+    cursor: none;
+}
+
+/* Centered block: flow + CTA; takes remaining space so footer can sit at bottom */
+.panel-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+    cursor: none;
+}
+
+/* Staged reveal: flow lines one at a time → CTA → X logo. Very smooth ease. */
+@keyframes panelReveal {
+    from {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
+/* Very soft easing: no sudden start, smooth settle */
+:root {
+    --panel-reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Flow children: one at a time in DOM order; staggered fade-in. */
+.flow > * {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    animation: panelReveal 0.65s var(--panel-reveal-ease) both;
+}
+
+/* Sequential: line → arrow … (delay = (n-1) * 0.13s) */
+.flow > *:nth-child(1) { animation-delay: 0s; }
+.flow > *:nth-child(2) { animation-delay: 0.13s; }
+.flow > *:nth-child(3) { animation-delay: 0.26s; }
+.flow > *:nth-child(4) { animation-delay: 0.39s; }
+.flow > *:nth-child(5) { animation-delay: 0.52s; }
+.flow > *:nth-child(6) { animation-delay: 0.65s; }
+.flow > *:nth-child(7) { animation-delay: 0.78s; }
+.flow > *:nth-child(8) { animation-delay: 0.91s; }
+.flow > *:nth-child(9) { animation-delay: 1.04s; }
+.flow > *:nth-child(10) { animation-delay: 1.17s; }
+.flow > *:nth-child(11) { animation-delay: 1.3s; }
+.flow > *:nth-child(12) { animation-delay: 1.43s; }
+.flow > *:nth-child(13) { animation-delay: 1.56s; }
+.flow > *:nth-child(14) { animation-delay: 1.69s; }
+.flow > *:nth-child(15) { animation-delay: 1.82s; }
+
+.cta {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    animation: panelReveal 0.65s var(--panel-reveal-ease) 2.1s both;
+}
+
+/* Footer: X logo under the text, pinned to bottom */
+.panel-footer {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    padding-bottom: 0.25rem;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    animation: panelReveal 0.65s var(--panel-reveal-ease) 2.55s both;
+}
+
+.x-link {
+    display: inline-block;
+    opacity: 0.28;
+    transition: opacity 0.2s ease;
+}
+
+.x-link:hover {
+    opacity: 0.7;
+}
+
+.x-logo {
+    display: block;
+    width: 20px;
+    height: 15px;
+    filter: brightness(0);
+    transition: filter 0.2s ease;
+}
+
+.x-link:hover .x-logo {
+    filter: brightness(0.6);
+}
+
+@media (max-width: 949px) {
+    body {
+        flex-direction: column;
+    }
+
+    .right-panel {
+        width: 100%;
+        max-width: 100%;
+        height: 40vh;
+        height: 40dvh;
+        min-height: 320px;
+        flex: 1;
+        padding: 1.5rem;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+.flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.flow-line {
+    color: #000;
+    font-size: clamp(0.75rem, 1.2vw, 1rem);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.flow-arrow {
+    color: #000;
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.cta {
+    display: inline-block;
+    background: #000;
+    color: #fff;
+    font-family: inherit;
+    font-size: clamp(0.8rem, 1.1vw, 1rem);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 1rem 2.5rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cta:hover {
+    background: #333;
+    color: #fff;
+}
+
+/* Stacked (viewport <950px): tighter flow/CTA */
+@media (max-width: 949px) {
+    .flow {
+        gap: 0.4rem;
+        margin-bottom: 2rem;
+    }
+
+    .flow-line {
+        font-size: clamp(0.7rem, 2.5vw, 0.95rem);
+    }
+
+    .cta {
+        padding: 0.875rem 2rem;
+        font-size: clamp(0.75rem, 2vw, 0.95rem);
+    }
+}
+
+/* Small phones: tighter padding and fonts */
+@media (max-width: 767px) {
+    .right-panel {
+        padding: 1.25rem 1rem;
+    }
+
+    .flow {
+        gap: 0.35rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .flow-line {
+        font-size: clamp(0.7rem, 3.5vw, 0.9rem);
+    }
+
+    .flow-arrow {
+        font-size: 0.9rem;
+    }
+
+    .cta {
+        padding: 0.875rem 1.75rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Very small phones: prevent overflow */
+@media (max-width: 380px) {
+    .right-panel {
+        padding: 1rem 0.75rem;
+    }
+
+    .flow-line {
+        font-size: 0.7rem;
+    }
+
+    .cta {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Accessibility: no panel reveal animation when motion is reduced */
+@media (prefers-reduced-motion: reduce) {
+    .flow > *,
+    .cta,
+    .panel-footer {
+        animation: none;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+    }
+}
