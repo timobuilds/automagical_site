@@ -48,27 +48,28 @@ scene.add(cube);
 
 camera.position.z = 6;
 
-// Scale book: fraction of canvas width; small mobile (≤400) = 85%, mobile (401–949) = 55% width or 85% height, desktop responsive
+// Scale book: fraction of visible width (or height on mobile). Tuned so MacBook = smaller, large monitor = larger.
 const BOOK_WIDTH_WORLD = 3.5;
 const BOOK_HEIGHT_WORLD = 5;
 const CAMERA_Z = 6;
 const MOBILE_BP = 950;           // match CSS stacked breakpoint (max-width: 949px)
-const SMALL_MOBILE_BP = 400;     // 400px and below: book at 85% width
-const SMALL_MOBILE_FRACTION = 0.85;
+const SMALL_MOBILE_BP = 400;     // 400px and below: book at 75% width
+const SMALL_MOBILE_FRACTION = 0.75;
 const MOBILE_FRACTION = 0.55;
-const MOBILE_HEIGHT_FRACTION = 0.85;  // 401–949px: book height = 85% of screen height
-const FRACTION_MIN = 0.35;  // wide screens (desktop)
-const FRACTION_MAX = 0.6;   // narrow desktop
-const WIDTH_AT_MIN = 900;
-const WIDTH_AT_MAX = 380;
+const MOBILE_HEIGHT_FRACTION = 0.75;  // 401–949px: book height = 75% of screen height
+const DESKTOP_HEIGHT_CLAMP = 0.92;    // cap book by height on desktop so it never overflows
 
+// Desktop (canvas ≥ MOBILE_BP): fraction increases with canvas size — smaller on MacBook, larger on big monitors.
+// Breakpoints: ~550 (0.18), ~750 (0.22), ~1000 (0.28), ~1300 (0.35), ~1600+ (0.42)
 function getBookWidthFraction(canvasWidth) {
     if (canvasWidth <= SMALL_MOBILE_BP) return SMALL_MOBILE_FRACTION;
     if (canvasWidth < MOBILE_BP) return MOBILE_FRACTION;
-    if (canvasWidth >= WIDTH_AT_MIN) return FRACTION_MIN;
-    if (canvasWidth <= WIDTH_AT_MAX) return FRACTION_MAX;
-    const t = (canvasWidth - WIDTH_AT_MAX) / (WIDTH_AT_MIN - WIDTH_AT_MAX);
-    return FRACTION_MIN + (1 - t) * (FRACTION_MAX - FRACTION_MIN);
+    if (canvasWidth <= 550) return 0.18;
+    if (canvasWidth <= 750) return 0.18 + (0.22 - 0.18) * (canvasWidth - 550) / 200;
+    if (canvasWidth <= 1000) return 0.22 + (0.28 - 0.22) * (canvasWidth - 750) / 250;
+    if (canvasWidth <= 1300) return 0.28 + (0.35 - 0.28) * (canvasWidth - 1000) / 300;
+    if (canvasWidth <= 1600) return 0.35 + (0.42 - 0.35) * (canvasWidth - 1300) / 300;
+    return 0.42;
 }
 
 function updateBookScale() {
