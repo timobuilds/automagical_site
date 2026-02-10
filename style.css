@@ -67,6 +67,17 @@ body {
 @media (min-width: 950px) {
     body {
         flex-direction: row;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+    }
+
+    .right-panel {
+        height: 100vh;
+        height: 100dvh;
+        max-height: 100dvh;
+        min-height: 0;
+        overflow-y: auto;
     }
 }
 
@@ -121,7 +132,6 @@ body {
 .right-panel {
     width: 50vw;
     min-width: 0;
-    height: 100%;
     min-height: 100vh;
     min-height: 100dvh;
     display: flex;
