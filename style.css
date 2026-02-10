@@ -90,11 +90,21 @@ body {
     .book {
         width: 100%;
         max-width: 100%;
-        height: 85vh;
-        height: 85dvh;
-        min-height: 340px;
-        padding-bottom: 40px;
+        height: 92vh;
+        height: 92dvh;
+        min-height: 380px;
+        padding: 24px;
+        padding-bottom: 32px;
         box-sizing: border-box;
+    }
+}
+
+/* 400–950px: more vertical space for book so it isn’t squished */
+@media (max-width: 949px) and (min-width: 400px) {
+    .book {
+        height: 96vh;
+        height: 96dvh;
+        min-height: 420px;
     }
 }
 
@@ -241,18 +251,19 @@ body {
     .right-panel {
         width: 100%;
         max-width: 100%;
-        height: 40vh;
-        height: 40dvh;
-        min-height: 320px;
+        height: 48vh;
+        height: 48dvh;
+        min-height: 380px;
         flex: 1;
         padding: 1.5rem;
-        padding-bottom: calc(1rem + 44px + 1rem + 1px + env(safe-area-inset-bottom, 0px)); /* space for fixed cta-bar */
+        padding-bottom: calc(96px + 1.5rem + env(safe-area-inset-bottom, 0px)); /* clear space above fixed cta-bar so footer + X link visible */
         overflow: auto;
         -webkit-overflow-scrolling: touch;
     }
 
     .cta-bar {
-        border-top: 1px solid #000;
+        background-color: #000;
+        border-top: 1px solid #fff;
         position: fixed;
         bottom: 0;
         left: 0;

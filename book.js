@@ -48,15 +48,23 @@ scene.add(cube);
 
 camera.position.z = 6;
 
-// Scale book: fraction of canvas width increases as screen gets narrower (book appears wider on small viewports)
+// Scale book: fraction of canvas width; small mobile (≤400) = 85%, mobile (401–949) = 55% width or 85% height, desktop responsive
 const BOOK_WIDTH_WORLD = 3.5;
+const BOOK_HEIGHT_WORLD = 5;
 const CAMERA_Z = 6;
-const FRACTION_MIN = 0.35;  // wide screens
-const FRACTION_MAX = 0.6;   // narrow screens
-const WIDTH_AT_MIN = 900;   // canvas width above this → use FRACTION_MIN
-const WIDTH_AT_MAX = 380;   // canvas width below this → use FRACTION_MAX
+const MOBILE_BP = 950;           // match CSS stacked breakpoint (max-width: 949px)
+const SMALL_MOBILE_BP = 400;     // 400px and below: book at 85% width
+const SMALL_MOBILE_FRACTION = 0.85;
+const MOBILE_FRACTION = 0.55;
+const MOBILE_HEIGHT_FRACTION = 0.85;  // 401–949px: book height = 85% of screen height
+const FRACTION_MIN = 0.35;  // wide screens (desktop)
+const FRACTION_MAX = 0.6;   // narrow desktop
+const WIDTH_AT_MIN = 900;
+const WIDTH_AT_MAX = 380;
 
 function getBookWidthFraction(canvasWidth) {
+    if (canvasWidth <= SMALL_MOBILE_BP) return SMALL_MOBILE_FRACTION;
+    if (canvasWidth < MOBILE_BP) return MOBILE_FRACTION;
     if (canvasWidth >= WIDTH_AT_MIN) return FRACTION_MIN;
     if (canvasWidth <= WIDTH_AT_MAX) return FRACTION_MAX;
     const t = (canvasWidth - WIDTH_AT_MAX) / (WIDTH_AT_MIN - WIDTH_AT_MAX);
@@ -67,9 +75,18 @@ function updateBookScale() {
     const { w, h } = getBookSize();
     if (w === 0 || h === 0) return;
 
+    const halfFov = (75 * Math.PI / 180) / 2;
+
+    // 400 < width < 950: scale by height so book height = 85% of screen height
+    if (w > SMALL_MOBILE_BP && w < MOBILE_BP) {
+        const visibleHeightAtZ0 = 2 * CAMERA_Z * Math.tan(halfFov);
+        const scale = (MOBILE_HEIGHT_FRACTION * visibleHeightAtZ0) / BOOK_HEIGHT_WORLD;
+        cube.scale.setScalar(scale);
+        return;
+    }
+
     const fraction = getBookWidthFraction(w);
     const aspect = w / h;
-    const halfFov = (75 * Math.PI / 180) / 2;
     const visibleWidthAtZ0 = 2 * CAMERA_Z * Math.tan(halfFov) * aspect;
     const scale = (fraction * visibleWidthAtZ0) / BOOK_WIDTH_WORLD;
     cube.scale.setScalar(scale);
