@@ -59,7 +59,7 @@ body {
 #sparkles-overlay {
     position: fixed;
     inset: 0;
-    z-index: 100;
+    z-index: 50;
 }
 
 /* Side-by-side: book left, panel right (when viewport ≥950px) */
@@ -264,7 +264,7 @@ body {
     .cta-bar .cta {
         opacity: 1;
         visibility: visible;
-        transform: none;
+        transform: translateY(0);
         animation: none;
     }
 }
@@ -295,7 +295,7 @@ body {
 .cta-bar .cta,
 .cta {
     display: inline-block;
-    background: #000;
+    background: #1A9653;
     color: #fff;
     font-family: inherit;
     font-size: clamp(0.8rem, 1.1vw, 1rem);
@@ -306,15 +306,18 @@ body {
     padding: 1rem 2.5rem;
     border: none;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.5s var(--panel-reveal-ease);
     min-height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
-.cta:hover {
-    transform: scale(1.05);
+.cta-bar .cta:hover,
+.cta:hover,
+.cta-bar .cta:active,
+.cta:active {
+    transform: scale(1.06) !important;
 }
 
 /* Stacked (viewport <950px): tighter flow/CTA */
@@ -383,6 +386,6 @@ body {
         animation: none;
         opacity: 1;
         visibility: visible;
-        transform: none;
+        transform: translateY(0);
     }
 }
