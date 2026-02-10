@@ -90,13 +90,12 @@ body {
     .book {
         width: 100%;
         max-width: 100%;
-        height: 60vh;
-        height: 60dvh;
+        height: 85vh;
+        height: 85dvh;
         min-height: 340px;
         padding-bottom: 40px;
         box-sizing: border-box;
     }
-
 }
 
 .book canvas {
@@ -260,6 +259,13 @@ body {
         right: 0;
         z-index: 100;
         padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .cta-bar .cta {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        animation: none;
     }
 }
 
